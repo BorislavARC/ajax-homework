@@ -1,0 +1,47 @@
+body {
+    margin: 0;
+    font-size: 16px;
+}
+.content {
+    width: 600px;
+    margin: 50px auto 0;
+}
+.results {
+    margin-top: 15px;
+}
+.content-left {
+    width: 45%;
+    float: left;
+}
+.content-right {
+    margin-left: 5%;
+    width: 50%;
+    float: right;
+}
+.results span {
+    margin-left: 5px;
+    font-size: 16px;
+    color: #323232;
+}
+.data {
+    font-weight: bold;
+}
+.error-message.label {
+    padding: 8px 4px;
+    margin: 10px 0;
+}
+.table caption {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 7px;
+}
+.repo.table td {
+    padding: 4px 8px;
+}
+.search {
+    width: 209px;
+}
+.table .label.label-important,
+.table .label.label-important:hover {
+    background-color: #B94A48;
+}
