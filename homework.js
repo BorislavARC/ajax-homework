@@ -1,17 +1,28 @@
+function clearOld() {
+    var savedPersons;
+    for(key in localStorage) {
+        savedPersons = JSON.parse(localStorage.getItem(key));
+        if(savedPersons.expires < +new Date()) {
+            localStorage.removeItem(key);
+        }
+    }
+}
+clearOld();
 
-
-document.getElementsByClassName('find')[0].addEventListener('click', githubFind);
+document.querySelector('.find').addEventListener('click', githubFind);
 
 function githubFind(){
-    var searchString = document.getElementsByClassName('search')[0].value,
-        name = document.getElementsByClassName('name')[0].children[0],
-        email = document.getElementsByClassName('email')[0].children[0],
-        followers = document.getElementsByClassName('followers')[0].children[0],
-        repo = document.getElementsByClassName('repo')[0],
-        error = document.getElementsByClassName('error-message')[0],
-        person = { },
+    clearOld();
+    var searchString = document.querySelector('.search').value,
+        name = document.querySelector('.name'),
+        email = document.querySelector('.email'),
+        followers = document.querySelector('.followers'),
+        repo = document.querySelector('.repo'),
+        error = document.querySelector('.error-message'),
+        person = {},
         savedPerson = JSON.parse(localStorage.getItem(searchString)),
         expires = +new Date() + 86400000;
+
 
     error.innerHTML = '';
     name.innerHTML = '';
@@ -25,24 +36,17 @@ function githubFind(){
     }
 
     if(savedPerson) {
-        if(savedPerson.expires < +new Date()) {
-            localStorage.removeItem(searchString);
-            getData()
-        } else {
         name.innerHTML = savedPerson.name || 'Не указано имя';
         email.innerHTML = savedPerson.email || 'Не указан email';
         followers.innerHTML = savedPerson.followers;
         repo.innerHTML = savedPerson.repo.join('');
-        }
     } else {
         getData()
     }
 
     function getData() {
         var xhr = new XMLHttpRequest();
-
-        xhr.open('GET', 'https://api.github.com/users/' + searchString, true);
-
+        xhr.open('GET', 'https://api.github.com/users/' + searchString);
         xhr.onload = function() {
             if (xhr.readyState != 4) {
                 return;
@@ -53,7 +57,7 @@ function githubFind(){
                 error.innerHTML = 'Ошибка ' + xhr.status + ': ' + xhr.statusText;
                 return;
             } else {
-                var data = eval( '(' + this.responseText + ')');
+                var data = JSON.parse(this.responseText);
                 name.innerHTML = data.name || 'Не указано имя';
                 email.innerHTML = data.email || 'Не указан email';
                 followers.innerHTML = data.followers;
@@ -62,20 +66,18 @@ function githubFind(){
                 person.followers = data.followers;
             }
         };
-        xhr.send('');
+        xhr.send();
 
 
         var xhr1 = new XMLHttpRequest();
-
-        xhr1.open('GET', 'https://api.github.com/users/' + searchString + '/repos?per_page=9999', true);
-
+        xhr1.open('GET', 'https://api.github.com/users/' + searchString + '/repos?per_page=9999');
         xhr1.onload = function() {
-            if (xhr.readyState != 4) {
+            if (xhr1.readyState != 4) {
                 return;
-            } else if(xhr.status != 200) {
+            } else if(xhr1.status != 200) {
                 return;
             } else {
-                var data = eval( '(' + this.responseText + ')');
+                var data = JSON.parse(this.responseText);
                 var repositories = ['<caption>Названия всех публичных репозиториев:</caption>'];
 
                 for(var i = 0; i < data.length; i++) {
@@ -87,12 +89,9 @@ function githubFind(){
                 repo.innerHTML = repositories.join('');
                 person.repo = repositories;
                 person.expires = expires;
-
-                setTimeout(function() {
-                    localStorage.setItem(searchString, JSON.stringify(person));
-                }, 1000);
+                localStorage.setItem(searchString, JSON.stringify(person));
             }
         };
-        xhr1.send('');
+        xhr1.send();
     }
 }
